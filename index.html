@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#16181a">
+<!-- what Add to Home Screen fills the name box with. iOS reads this one,
+     Android reads short_name from the manifest, and the title is the last
+     resort - all three say the same thing so the icon is never named
+     anything else. The user can still type over it. -->
+<meta name="apple-mobile-web-app-title" content="Ph.D">
+<title>Ph.D</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<style>
+/* Barlow / Barlow Condensed are the design's faces. They are not fetched from
+   a CDN on purpose: the app has to install and run with no network, and a
+   blocked font request would leave the type in whatever the browser fell back
+   to anyway. The stacks below reach for them if the device has them and
+   degrade to the nearest system face otherwise. */
+:root{
+  --bg:#16181a; --card:#1e2022; --text:#f0f1f2;
+  --n500:#7d8083; --n600:#9da0a3; --n700:#b8bbbe; --n800:#d7d9db;
+  --line-card:rgba(240,241,242,.09); --line-ctl:rgba(240,241,242,.14);
+  --line-rule:rgba(240,241,242,.08);
+  --accent:#1474e0; --accent600:#4b96e8; --accent700:#7fb6f2;
+  --pass:#1c7c4a; --pass-b:#249e5e; --fail:#9e2b2b; --fail-b:#c73a3a;
+  --fail-t:#e07070; --na:#3a3d40; --na-b:#585c60;
+  --cond:"Barlow Condensed","Oswald","Roboto Condensed","Segoe UI Semibold",
+         system-ui,sans-serif;
+  --body:"Barlow","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  overscroll-behavior-y:none}
+body{font-size:15px;line-height:1.35}
+button,input,select,textarea{font-family:inherit;color:inherit}
+button{border:0;background:none;padding:0;cursor:pointer}
+.cond{font-family:var(--cond);text-transform:uppercase}
+.kicker{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent700)}
+.meta{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--n600)}
+.hide{display:none!important}
+.screen{min-height:100dvh;display:flex;flex-direction:column}
+.body{padding:16px 20px 40px;display:flex;flex-direction:column;gap:16px;flex:1}
+
+/* ---------- controls ---------- */
+.inp{width:100%;min-height:54px;border-radius:12px;background:var(--card);
+  border:1px solid rgba(240,241,242,.12);color:var(--text);padding:0 14px;
+  font-family:var(--cond);font-size:17px;text-transform:uppercase;letter-spacing:.03em}
+textarea.inp,input.txt{font-family:var(--body);text-transform:none;letter-spacing:0}
+textarea.inp{min-height:96px;padding:12px 14px;font-size:15px;line-height:1.35;resize:vertical}
+input.txt{min-height:52px;font-size:17px}
+.btn{width:100%;min-height:50px;border-radius:14px;font-family:var(--cond);
+  font-size:17px;letter-spacing:.06em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:var(--accent);color:#16181a}
+.btn.secondary{background:transparent;border:1px solid var(--line-ctl);color:var(--n700)}
+.btn.danger{background:var(--fail);border:1px solid var(--fail-b);color:#fdeeee}
+.btn[disabled]{background:transparent;border:1px solid var(--line-ctl);
+  color:var(--n500);cursor:not-allowed}
+.btn.tall{min-height:58px;font-size:19px;letter-spacing:.08em}
+.ghost{font-family:var(--cond);font-size:15px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--n700)}
+.sq{width:38px;height:38px;border-radius:10px;border:1px solid var(--line-ctl);
+  display:flex;align-items:center;justify-content:center;color:var(--n700);flex:none}
+.card{background:var(--card);border:1px solid var(--line-card);border-radius:14px;
+  box-shadow:0 1px 2px rgba(0,0,0,.5)}
+
+/* ---------- launch gate ---------- */
+#gate .body{padding:64px 22px 40px;gap:18px}
+.lock{display:flex;gap:14px;align-items:center}
+.lock img{width:112px;height:112px;object-fit:contain;margin-left:-6px}
+.word{font-family:var(--cond);font-size:38px;line-height:.96;text-transform:uppercase}
+.word .v{color:var(--accent700)}
+.sub{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--n600);margin-top:6px}
+.rule{height:1px;background:rgba(240,241,242,.2)}
+.dd{position:relative}
+.dd-trigger{width:100%;min-height:54px;border-radius:12px;background:var(--card);
+  border:1px solid var(--line-ctl);display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;font-family:var(--cond);font-size:18px;letter-spacing:.04em}
+.dd.open .dd-trigger{border-color:var(--accent)}
+.dd-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;max-height:236px;
+  overflow-y:auto;background:var(--card);border:1px solid rgba(240,241,242,.1);
+  border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.6);z-index:40}
+.dd-menu button{width:100%;min-height:46px;display:flex;align-items:center;padding:0 14px;
+  border-bottom:1px solid var(--line-rule);font-family:var(--cond);font-size:17px;
+  letter-spacing:.04em;color:var(--text)}
+.dd-menu button.on{background:var(--accent);color:#16181a}
+.scrim-tap{position:fixed;inset:0;z-index:30}
+
+/* ---------- closet list ---------- */
+.head{position:sticky;top:0;background:var(--bg);z-index:20;
+  border-bottom:1px solid var(--line-rule)}
+#list .head{padding:56px 20px 14px}
+#qs .head{padding:58px 20px 10px}
+.hosp{font-family:var(--cond);font-size:24px;text-transform:uppercase;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.yearrow{display:flex;align-items:center;gap:10px;margin-top:12px}
+.badge{min-width:86px;padding:8px 12px;border-radius:10px;background:var(--card);
+  font-family:var(--cond);font-size:19px;letter-spacing:.06em;text-align:center}
+.closet{padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px}
+.closet .r1{display:flex;align-items:center;gap:10px}
+.cname{flex:1;font-family:var(--cond);font-size:21px;text-transform:uppercase;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;
+  border-radius:999px;white-space:nowrap}
+.pill.done{background:var(--accent);color:#16181a}
+.pill.other{border:1px solid rgba(240,241,242,.2);color:var(--n700)}
+.segs{display:flex;gap:2px;flex:1}
+.seg{flex:1;height:6px;border-radius:2px;background:rgba(240,241,242,.13)}
+.seg.p{background:var(--pass-b)} .seg.f{background:var(--fail-b)} .seg.s{background:var(--na-b)}
+.r2{display:flex;align-items:center;gap:10px}
+.r2 .n{font-family:var(--cond);font-size:12px;color:var(--n700)}
+.r3{font-size:11.5px;color:var(--n600)}
+
+/* ---------- questions ---------- */
+.q{padding:15px 15px 13px;display:flex;flex-direction:column;gap:11px}
+.qt{font-family:var(--cond);font-size:19px;line-height:1.15;text-transform:uppercase}
+.opts{display:flex;gap:6px}
+.opt{flex:1;min-height:48px;border-radius:12px;border:1px solid var(--line-ctl);
+  background:transparent;color:var(--n700);font-family:var(--cond);font-size:16px;
+  letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;
+  justify-content:center;text-align:center;padding:0 4px}
+.opt.four{font-size:14px}
+.opt.on-pass{background:var(--pass);border-color:var(--pass-b);color:#eafaf1}
+.opt.on-fail{background:var(--fail);border-color:var(--fail-b);color:#fdeeee}
+.opt.on-skip{background:var(--na);border-color:var(--na-b);color:#d7d9db}
+.shots{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.thumb{width:56px;height:56px;border-radius:12px;border:1px solid var(--line-ctl);
+  background-size:cover;background-position:center;position:relative;flex:none}
+.thumb .x{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:999px;
+  background:#f0f1f2;color:#16181a;font-size:13px;line-height:20px;text-align:center}
+.cap{width:56px;height:56px;border-radius:12px;border:1px dashed var(--line-ctl);
+  display:flex;align-items:center;justify-content:center;color:var(--accent700);flex:none}
+.cap.has{border-style:solid}
+
+/* ---------- sheets & overlays ---------- */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;
+  display:flex;align-items:flex-end;transition:bottom .22s ease}
+.sheet{width:100%;background:var(--card);border-top:1px solid rgba(240,241,242,.12);
+  border-radius:20px 20px 0 0;padding:22px 20px 44px;display:flex;flex-direction:column;gap:14px}
+.scrim.lifted{bottom:var(--kb,300px)}
+.scrim.lifted .sheet{padding-bottom:20px}
+.sheet h2{margin:0;font-family:var(--cond);font-size:26px;text-transform:uppercase;font-weight:400}
+.viewer{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:60;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:16px}
+.viewer img{max-width:100%;max-height:80vh;object-fit:contain;border-radius:12px}
+.viewer .cap2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--n600)}
+
+/* ---------- export ---------- */
+#exp .body{padding:58px 20px 40px;gap:18px}
+.tally{display:flex;justify-content:space-between;padding:16px}
+.tally div{font-family:var(--cond);font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+.alert{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line-rule)}
+.alert .bar{width:3px;border-radius:2px;background:var(--fail-b);flex:none}
+.alert .an{font-family:var(--cond);font-size:16px;text-transform:uppercase}
+.alert .ac{font-size:11px;color:var(--n600);margin-top:3px}
+.fname{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--n600);
+  text-align:center;word-break:break-all}
+.note{font-size:12px;color:var(--n600);line-height:1.45}
+</style>
+</head>
+<body>
+
+<!-- ============================ launch gate ============================ -->
+<section id="gate" class="screen">
+  <div class="body">
+    <div class="lock">
+      <img src="mark.png" alt="">
+      <div>
+        <div class="word">Ph.D<br><span class="v">V1.1</span> Mobile</div>
+        <div class="sub">Closet walkaround</div>
+      </div>
+    </div>
+    <div class="rule"></div>
+
+    <div>
+      <div class="kicker">Hospital</div>
+      <select id="hosp" class="inp" style="margin-top:8px"></select>
+      <div id="hospmeta" class="meta" style="margin-top:8px"></div>
+      <button id="addhosp" class="ghost" style="margin-top:10px">+ Add hospital</button>
+      <div id="addrow" class="hide" style="display:flex;gap:8px;margin-top:10px">
+        <input id="newhosp" class="inp txt" placeholder="New hospital name" style="flex:1">
+        <button id="addgo" class="btn secondary" style="width:auto;padding:0 18px">Add</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="kicker">Healthcheck year</div>
+      <div id="yeardd" class="dd" style="margin-top:8px">
+        <button class="dd-trigger" id="yeartrig"><span id="yearlab">2026</span>
+          <span style="opacity:.65">&#9660;</span></button>
+      </div>
+    </div>
+
+    <button id="start" class="btn primary tall" disabled>Start walkaround</button>
+    <div id="resume" class="meta" style="text-align:center;text-transform:none;
+      letter-spacing:0;font-size:11.5px"></div>
+  </div>
+</section>
+
+<!-- ============================ closet list ============================ -->
+<section id="list" class="screen hide">
+  <div class="head">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="sq" id="tolaunch">&#8249;</button>
+      <div class="hosp" id="lhosp"></div>
+    </div>
+    <div class="yearrow">
+      <div class="kicker" style="flex:1">Healthcheck year</div>
+      <button class="sq" id="ydown">&#8249;</button>
+      <div class="badge" id="ybadge"></div>
+      <button class="sq" id="yup">&#8250;</button>
+    </div>
+  </div>
+  <div class="body" id="closets"></div>
+</section>
+
+<!-- ============================ questions ============================ -->
+<section id="qs" class="screen hide">
+  <div class="head">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <button class="ghost" id="toclosets">&#8249; Closets</button>
+      <div id="qcount" style="font-size:13px;color:var(--n600)"></div>
+    </div>
+    <div class="hosp" id="qname" style="font-size:27px;margin-top:8px"></div>
+  </div>
+  <div class="body" id="qlist" style="padding:14px 20px 40px;gap:14px"></div>
+</section>
+
+<!-- ============================ export ============================ -->
+<section id="exp" class="screen hide">
+  <div class="body">
+    <button class="ghost" id="toclosets2" style="align-self:flex-start">&#8249; Closets</button>
+    <div class="word" style="font-size:30px">Export walkaround</div>
+    <div style="font-size:12.5px;color:var(--n700)">Worst result wins: a fail in any
+      closet is a fail for the report.</div>
+    <div class="card tally" id="tally"></div>
+    <div>
+      <div class="kicker">Alerts this raises</div>
+      <div id="alerts" style="margin-top:8px"></div>
+    </div>
+    <button id="save" class="btn primary" style="min-height:56px">Save walkaround JSON</button>
+    <div class="fname" id="fname"></div>
+    <div class="note" id="savehint"></div>
+  </div>
+</section>
+
+<div id="modal"></div>
+<div id="viewer"></div>
+
+<!-- the same questions and hospitals baked into a script, so opening
+     index.html straight off the disk works too - fetch() is blocked on
+     file:// and would leave the app with nothing to ask -->
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
