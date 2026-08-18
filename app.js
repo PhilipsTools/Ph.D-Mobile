@@ -689,7 +689,34 @@ function init() {
     show("gate");
   });
 
+  // Coming back to the app is the moment to look for new questions and sites.
+  // iOS resumes a backgrounded app without reloading the page, so without this
+  // the set it opened with is the set it keeps - which is why a change
+  // published on the PC looked like it had not arrived until the app was force
+  // closed and reopened.
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) refreshFromServer();
+  });
+  window.addEventListener("focus", refreshFromServer);
+
   armOffline();
+}
+
+var refreshing = false;
+function refreshFromServer() {
+  // Only on the gate. Swapping the question set out from under someone
+  // halfway through a closet would be worse than showing them a stale list,
+  // and there is nothing on the later screens a refresh would improve.
+  if (refreshing || S.screen !== "gate") return;
+  refreshing = true;
+  loadHospitals()
+    .then(loadQuestions)
+    .then(function (qs) {
+      if (qs && qs.length) Q = qs;
+      drawGate();
+    })
+    .catch(function () { /* no signal - keep what we have */ })
+    .then(function () { refreshing = false; });
 }
 
 /* Caches the app so it opens with no signal. Silent on purpose - a phone
