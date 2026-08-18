@@ -10,7 +10,12 @@
 /* ------------------------------------------------------------------ state */
 var LS = "walkaround.v2";
 var S = {
-  hospitals: [], gate: {hospital: "", year: String(new Date().getFullYear())},
+  // `hospitals` is what the dropdown shows. `mine` is only the sites added on
+  // this phone - they are kept apart so the published list can be authoritative:
+  // a site removed or renamed in the tool has to actually disappear here, which
+  // it cannot do if everything the phone has ever seen is merged back in.
+  hospitals: [], mine: [],
+  gate: {hospital: "", year: String(new Date().getFullYear())},
   closetsByKey: {}, folder: "", screen: "gate", closet: -1, questions: []
 };
 var Q = [];                       // the question set in play
@@ -22,7 +27,7 @@ var YEAR_MIN = Math.min(2026, thisYear()), YEAR_MAX = Math.max(2046, thisYear() 
 function save() {
   try {
     localStorage.setItem(LS, JSON.stringify({
-      hospitals: S.hospitals, gate: S.gate,
+      hospitals: S.hospitals, mine: S.mine, gate: S.gate,
       closetsByKey: S.closetsByKey, folder: S.folder
     }));
   } catch (e) { /* full or private mode - the screen still works */ }
@@ -33,6 +38,7 @@ function load() {
     if (!raw) return;
     var d = JSON.parse(raw);
     S.hospitals = d.hospitals || [];
+    S.mine = d.mine || [];
     S.closetsByKey = d.closetsByKey || {};
     S.folder = d.folder || "";
     // The gate deliberately does NOT come back. Every launch opens with no
@@ -181,15 +187,23 @@ function loadHospitals() {
     .then(function (r) { return r.ok ? r.json() : null; })
     .catch(function () { return null; })
     .then(function (list) {
-      if (!list) list = window.__HOSPITALS || null;
+      var offline = !list;                     // no signal - keep what we have
+      if (offline) list = window.__HOSPITALS || null;
       var names = [];
       (list || []).forEach(function (h) {
         var n = typeof h === "string" ? h : (h && h.name);
-        if (n) names.push(n);
+        if (n && names.indexOf(n) < 0) names.push(n);
       });
-      // anything added on the phone is kept alongside whatever the tool sent
-      S.hospitals.forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
+      // The tool's list wins outright, so removing or renaming a site there
+      // actually takes effect here. Only the sites added on this phone are
+      // carried over - and only if the tool has not since published them.
+      if (!names.length && offline) return;    // nothing fetched, nothing baked
+      S.mine.forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
       S.hospitals = names.sort(function (a, b) { return a.localeCompare(b); });
+      // a hospital no longer on file cannot stay selected
+      if (S.gate.hospital && S.hospitals.indexOf(S.gate.hospital) < 0) {
+        S.gate.hospital = "";
+      }
       save();
     });
 }
@@ -651,6 +665,8 @@ function init() {
   $("addgo").onclick = function () {
     var n = ($("newhosp").value || "").trim();
     if (!n) return;
+    // remembered as this phone's own, so a later publish cannot wipe it
+    if (S.mine.indexOf(n) < 0) S.mine.push(n);
     if (S.hospitals.indexOf(n) < 0) S.hospitals.push(n);
     S.hospitals.sort(function (a, b) { return a.localeCompare(b); });
     S.gate.hospital = n; $("newhosp").value = "";
