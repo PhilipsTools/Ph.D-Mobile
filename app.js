@@ -16,7 +16,11 @@ var S = {
   // it cannot do if everything the phone has ever seen is merged back in.
   hospitals: [], mine: [],
   gate: {hospital: "", year: String(new Date().getFullYear())},
-  closetsByKey: {}, folder: "", screen: "gate", closet: -1, questions: []
+  // `exported` remembers what a walkaround looked like when it was last sent
+  // out, keyed the same way the closets are. Comparing that against how it
+  // looks now is what tells the gate whether there is still work to do.
+  closetsByKey: {}, exported: {},
+  folder: "", screen: "gate", closet: -1, questions: []
 };
 var Q = [];                       // the question set in play
 // the list always reaches the year we are actually in, however far off that
@@ -28,7 +32,8 @@ function save() {
   try {
     localStorage.setItem(LS, JSON.stringify({
       hospitals: S.hospitals, mine: S.mine, gate: S.gate,
-      closetsByKey: S.closetsByKey, folder: S.folder
+      closetsByKey: S.closetsByKey, exported: S.exported,
+      folder: S.folder
     }));
   } catch (e) { /* full or private mode - the screen still works */ }
 }
@@ -40,6 +45,7 @@ function load() {
     S.hospitals = d.hospitals || [];
     S.mine = d.mine || [];
     S.closetsByKey = d.closetsByKey || {};
+    S.exported = d.exported || {};
     S.folder = d.folder || "";
     // The gate deliberately does NOT come back. Every launch opens with no
     // hospital picked and the year taken off the calendar, so nobody walks a
@@ -50,6 +56,26 @@ function load() {
   } catch (e) {}
 }
 function key() { return S.gate.hospital + "|" + S.gate.year; }
+
+/* What the current walkaround looks like: how many closets, how many answers,
+   how many photos. Stored when it is exported and compared on the gate, so
+   the button can tell "finished and sent" from "sent, then carried on". */
+function walkSignature(k) {
+  var cs = S.closetsByKey[k || key()] || [];
+  var answers = 0, shots = 0;
+  cs.forEach(function (c) {
+    answers += Object.keys(c.answers || {}).length;
+    Object.keys(c.photos || {}).forEach(function (q) {
+      shots += (c.photos[q] || []).length;
+    });
+  });
+  return cs.length + ":" + answers + ":" + shots;
+}
+function markExported() {
+  S.exported[key()] = walkSignature();
+  save();
+  if (S.screen === "gate") drawGate();
+}
 function closets() {
   if (!S.closetsByKey[key()]) S.closetsByKey[key()] = [];
   return S.closetsByKey[key()];
@@ -243,8 +269,22 @@ function drawGate() {
       (S.hospitals.length === 1 ? "" : "s") + " saved on this phone";
   }
   $("start").disabled = !h;
-  $("resume").textContent = h ? ("Continues " + h + " · " + S.gate.year)
-                              : "Pick a hospital to continue";
+
+  // The button says what pressing it will actually do. "Completed" means the
+  // walkaround was exported and has not been touched since - export, then add
+  // a closet, and it goes back to saying Continue, because it has.
+  var cs = h ? (S.closetsByKey[key()] || []) : [];
+  var sent = h && cs.length > 0 && S.exported[key()] === walkSignature();
+  $("start").textContent = !cs.length ? "Start walkaround"
+                         : sent       ? "View completed walkaround"
+                                      : "Continue walkaround";
+
+  var many = cs.length === 1 ? " closet" : " closets";
+  $("resume").textContent =
+      !h          ? "Pick a hospital to continue"
+    : !cs.length  ? ("Nothing recorded yet for " + S.gate.year)
+    : sent        ? (cs.length + many + " · exported")
+                  : (cs.length + many + " · not exported yet");
 }
 function openYears() {
   var dd = $("yeardd");
@@ -614,7 +654,11 @@ function doSave() {
     var file = null;
     try { file = new File([blob], name, {type: "application/json"}); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({files: [file]})) {
-      navigator.share({files: [file], title: name}).catch(function () {});
+      // marked only when the share actually completes - cancelling the
+      // sheet must not leave a walkaround looking like it was sent
+      navigator.share({files: [file], title: name})
+        .then(markExported)
+        .catch(function () {});
       return;
     }
     // on a PC it is a download. Run it from the outermost page: a browser
@@ -630,6 +674,7 @@ function doSave() {
       (doc.body || doc.documentElement).appendChild(a);
       a.click(); a.remove();
       if (hint) hint.textContent = "Saved " + name + " — look in your downloads.";
+      markExported();
     } catch (e) {
       try { window.open(url, "_blank"); }
       catch (e2) {
