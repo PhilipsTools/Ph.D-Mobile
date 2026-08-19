@@ -572,22 +572,25 @@ function drawExport() {
 function buildPayload() {
   var cs = closets();
   return Promise.all(cs.map(function (c) {
-    var byQ = {}, flat = [];
+    var byQ = {};
     var jobs = [];
     Object.keys(c.photos || {}).forEach(function (qid) {
       (c.photos[qid] || []).forEach(function (pid) {
         jobs.push(getPhoto(pid).then(blobToDataURL).then(function (d) {
           if (!d) return;
           (byQ[qid] = byQ[qid] || []).push(d);
-          flat.push(d);
         }));
       });
     });
     return Promise.all(jobs).then(function () {
       return {
         name: c.name, answers: c.answers || {}, notes: c.notes || "",
-        photos: flat,                 // what the report builder reads today
-        photosByQuestion: byQ         // per question, for when it can use them
+        // Each photo appears once, under the question it was taken for. There
+        // used to be a second flat copy of every one of them alongside this,
+        // which doubled the size of the file for nothing - base64 is already
+        // a third bigger than the image. The importer reads this, and only
+        // falls back to a flat list for exports made before it existed.
+        photosByQuestion: byQ
       };
     });
   })).then(function (closetsOut) {
