@@ -650,10 +650,19 @@ function doSave() {
   buildPayload().then(function (payload) {
     var blob = new Blob([JSON.stringify(payload)], {type: "application/json"});
     var name = exportName();
-    // on the phone the share sheet is what lets you choose where it goes
+    // On the phone the share sheet is what lets you choose where it goes.
+    // On a PC it is the wrong tool entirely - Chrome on Windows now says it
+    // can share files, so this used to hand a JSON to the Windows share
+    // dialog and no file ever appeared. Share only where it makes sense:
+    // a touch-first device, and not inside the simulator frame.
     var file = null;
     try { file = new File([blob], name, {type: "application/json"}); } catch (e) {}
-    if (file && navigator.canShare && navigator.canShare({files: [file]})) {
+    var framed = true;
+    try { framed = window.top !== window; } catch (e) { framed = true; }
+    var touchFirst = !!(window.matchMedia &&
+                        window.matchMedia("(pointer: coarse)").matches);
+    if (!framed && touchFirst && file &&
+        navigator.canShare && navigator.canShare({files: [file]})) {
       // marked only when the share actually completes - cancelling the
       // sheet must not leave a walkaround looking like it was sent
       navigator.share({files: [file], title: name})
