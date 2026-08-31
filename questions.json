@@ -296,26 +296,5 @@
     "result": "Skip"
    }
   ]
- },
- {
-  "id": "new alert 12",
-  "question": "test",
-  "alert": "test",
-  "section": "4.1",
-  "severity": "Recommendation",
-  "options": [
-   {
-    "label": "Yes",
-    "result": "Pass"
-   },
-   {
-    "label": "No",
-    "result": "Fail"
-   },
-   {
-    "label": "N/A",
-    "result": "Skip"
-   }
-  ]
  }
 ]
