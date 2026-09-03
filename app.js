@@ -68,6 +68,7 @@ function walkSignature(k) {
     Object.keys(c.photos || {}).forEach(function (q) {
       shots += (c.photos[q] || []).length;
     });
+    shots += (c.notePhotos || []).length;
   });
   return cs.length + ":" + answers + ":" + shots;
 }
@@ -166,11 +167,38 @@ function counts(c) {
     if (a) { done++; if (resultOf(q, a) === "Fail") fail++; }
     shots += ((c.photos || {})[q.id] || []).length;
   });
+  shots += (c.notePhotos || []).length;
   return {done: done, fail: fail, shots: shots, total: Q.length};
 }
 function statusOf(c) {
+  // A closet nobody has looked at yet says so, even though every question
+  // already carries an answer. Without this the list shows a brand new closet
+  // as Complete, and there is no way to tell what has actually been walked
+  // from what is still sitting on its defaults.
+  if (c.prefilled) return "Defaults";
   var n = counts(c).done;
   return n === 0 ? "Not started" : (n >= Q.length ? "Complete" : "In progress");
+}
+
+/* Every question starts on its Pass option.
+ *
+ * A closet that is entirely fine is the common case, and tapping thirty Pass
+ * buttons to say so was the slowest part of the walkaround. The engineer now
+ * reviews and changes only what is wrong. A question with no Pass option is
+ * left blank - there is nothing to assume for it.
+ */
+function defaultAnswers() {
+  var a = {};
+  Q.forEach(function (q) {
+    for (var i = 0; i < (q.options || []).length; i++) {
+      if (String(q.options[i].result) === "Pass") { a[q.id] = q.options[i].label; break; }
+    }
+  });
+  return a;
+}
+function newCloset(name) {
+  return {name: name, answers: defaultAnswers(), photos: {},
+          notePhotos: [], notes: "", prefilled: true};
 }
 
 /* ---------------------------------------------------------- question set */
@@ -326,7 +354,13 @@ function drawList() {
     var r1 = el("div", "r1");
     r1.appendChild(el("div", "cname", c.name));
     var st = statusOf(c);
-    r1.appendChild(el("div", "pill " + (st === "Complete" ? "done" : "other"), st));
+    r1.appendChild(el("div", "pill " + (st === "Complete" ? "done"
+                                      : st === "Defaults" ? "pre" : "other"), st));
+    var ren = el("button", "sq", "");
+    ren.style.width = "34px"; ren.style.height = "34px";
+    ren.innerHTML = pencilIcon();
+    ren.onclick = function (e) { e.stopPropagation(); renameSheet(i); };
+    r1.appendChild(ren);
     var del = el("button", "sq", "");
     del.style.width = "34px"; del.style.height = "34px";
     del.innerHTML = trashIcon();
@@ -366,9 +400,7 @@ function drawList() {
       " closets from " + prev);
     cp.style.marginTop = "12px";
     cp.onclick = function () {
-      prevList.forEach(function (p) {
-        closets().push({name: p.name, answers: {}, photos: {}, notes: ""});
-      });
+      prevList.forEach(function (p) { closets().push(newCloset(p.name)); });
       save(); drawList();
     };
     c2.appendChild(cp);
@@ -383,11 +415,57 @@ function drawList() {
   host.appendChild(ex);
 }
 
+/* The camera strip: the thumbnails already taken, then the shutter.
+   A function rather than inline, because the questions and the closet notes
+   want exactly the same control and only differ in which list it reads. */
+function photoStrip(get, set, prefix) {
+  var strip = el("div", "shots");
+  get().forEach(function (pid) {
+    var t = el("div", "thumb");
+    getPhoto(pid).then(function (b) {
+      if (b) t.style.backgroundImage = "url(" + URL.createObjectURL(b) + ")";
+    });
+    t.onclick = function () { openViewer(pid); };
+    var x = el("div", "x", "×");
+    x.onclick = function (e) {
+      e.stopPropagation();
+      set(get().filter(function (p) { return p !== pid; }));
+      delPhoto(pid); save(); drawQuestions();
+    };
+    t.appendChild(x);
+    strip.appendChild(t);
+  });
+  var capw = el("label", "cap" + (get().length ? " has" : ""));
+  capw.innerHTML = cameraIcon();
+  var inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "image/*"; inp.capture = "environment";
+  inp.multiple = true; inp.className = "hide";
+  inp.onchange = function () {
+    var files = Array.prototype.slice.call(inp.files || []);
+    if (!files.length) return;
+    Promise.all(files.map(function (f) {
+      var id = prefix + "|" + Date.now() + "|" + Math.random().toString(36).slice(2, 7);
+      return shrink(f).then(function (b) { return putPhoto(id, b); });
+    })).then(function (ids) {
+      set(get().concat(ids));
+      save(); drawQuestions();
+    });
+  };
+  capw.appendChild(inp);
+  strip.appendChild(capw);
+  return strip;
+}
+
 /* ---- questions ---- */
 function drawQuestions() {
   var c = closets()[S.closet];
   if (!c) return show("list");
-  $("qname").textContent = c.name;
+  // the name is editable from here too, since this is where you notice it is
+  // wrong - you are standing in the closet
+  var nameEl = $("qname");
+  nameEl.textContent = c.name;
+  nameEl.style.cursor = "pointer";
+  nameEl.onclick = function () { renameSheet(S.closet); };
   var host = $("qlist"); host.innerHTML = "";
   c.answers = c.answers || {}; c.photos = c.photos || {};
 
@@ -402,49 +480,23 @@ function drawQuestions() {
       if (on) cls += o.result === "Pass" ? " on-pass" : o.result === "Fail" ? " on-fail" : " on-skip";
       var b = el("button", cls, o.label);
       b.onclick = function () {
-        if (on) delete c.answers[q.id];      // tapping the chosen one clears it
-        else c.answers[q.id] = o.label;
+        // Tapping the chosen option clears it - except on a closet still
+        // sitting on its defaults, where the natural thing to tap is the Pass
+        // that is already lit, to confirm it. Wiping the answer there would
+        // punish the engineer for agreeing with it.
+        if (on && !c.prefilled) delete c.answers[q.id];
+        else if (!on) c.answers[q.id] = o.label;
+        delete c.prefilled;                  // it has been looked at now
         save(); drawQuestions();
       };
       row.appendChild(b);
     });
     card.appendChild(row);
 
-    var strip = el("div", "shots");
-    (c.photos[q.id] || []).forEach(function (pid) {
-      var t = el("div", "thumb");
-      getPhoto(pid).then(function (b) {
-        if (b) t.style.backgroundImage = "url(" + URL.createObjectURL(b) + ")";
-      });
-      t.onclick = function () { openViewer(pid); };
-      var x = el("div", "x", "×");
-      x.onclick = function (e) {
-        e.stopPropagation();
-        c.photos[q.id] = (c.photos[q.id] || []).filter(function (p) { return p !== pid; });
-        delPhoto(pid); save(); drawQuestions();
-      };
-      t.appendChild(x);
-      strip.appendChild(t);
-    });
-    var capw = el("label", "cap" + ((c.photos[q.id] || []).length ? " has" : ""));
-    capw.innerHTML = cameraIcon();
-    var inp = document.createElement("input");
-    inp.type = "file"; inp.accept = "image/*"; inp.capture = "environment";
-    inp.multiple = true; inp.className = "hide";
-    inp.onchange = function () {
-      var files = Array.prototype.slice.call(inp.files || []);
-      if (!files.length) return;
-      Promise.all(files.map(function (f) {
-        var id = q.id + "|" + Date.now() + "|" + Math.random().toString(36).slice(2, 7);
-        return shrink(f).then(function (b) { return putPhoto(id, b); });
-      })).then(function (ids) {
-        c.photos[q.id] = (c.photos[q.id] || []).concat(ids);
-        save(); drawQuestions();
-      });
-    };
-    capw.appendChild(inp);
-    strip.appendChild(capw);
-    card.appendChild(strip);
+    card.appendChild(photoStrip(
+      function () { return c.photos[q.id] || []; },
+      function (v) { c.photos[q.id] = v; },
+      q.id));
     host.appendChild(card);
   });
 
@@ -456,6 +508,17 @@ function drawQuestions() {
   ta.value = c.notes || "";
   ta.oninput = function () { c.notes = ta.value; save(); };
   host.appendChild(ta);
+
+  // Pictures of the closet itself, not of any one question. They travel with
+  // the export and land in Closet Pictures in the tool, but they raise no
+  // alert and are attached to no answer - a photo of a tidy rack is not a
+  // finding.
+  var pk = el("div", "r3", "Closet photos — for the record, not for an alert");
+  host.appendChild(pk);
+  host.appendChild(photoStrip(
+    function () { return c.notePhotos || []; },
+    function (v) { c.notePhotos = v; },
+    "__notes"));
 
   var done = el("button", "btn primary", "Done — back to closets");
   done.style.minHeight = "52px";
@@ -512,13 +575,40 @@ function nameSheet() {
     firstTap(cancel, close);
     firstTap(go, function () {
       var n = (inp.value || "").trim() || ("Closet " + (closets().length + 1));
-      closets().push({name: n, answers: {}, photos: {}, notes: ""});
+      closets().push(newCloset(n));
       S.closet = closets().length - 1;
       save(); close(); show("qs");
     });
     row.appendChild(cancel); row.appendChild(go);
     box.appendChild(row);
     setTimeout(function () { inp.focus(); }, 60);
+  });
+}
+function renameSheet(i) {
+  var c = closets()[i];
+  if (!c) return;
+  sheet(function (box, close) {
+    box.appendChild(el("div", "kicker", "Rename closet"));
+    box.appendChild(el("h2", null, c.name));
+    var inp = document.createElement("input");
+    inp.className = "inp txt"; inp.placeholder = "e.g. IDF-3 · L3 North";
+    inp.value = c.name || "";
+    box.appendChild(inp);
+    var row = el("div"); row.style.display = "flex"; row.style.gap = "10px";
+    var cancel = el("button", "btn secondary", "Cancel"); cancel.style.flex = "1";
+    var go = el("button", "btn primary", "Save name"); go.style.flex = "2";
+    firstTap(cancel, close);
+    firstTap(go, function () {
+      // A blank box means "leave it alone" - never means "call it nothing".
+      var n = (inp.value || "").trim();
+      if (n) c.name = n;
+      save(); close();
+      // the name shows in both places, so repaint whichever is up
+      if (S.screen === "qs") drawQuestions(); else drawList();
+    });
+    row.appendChild(cancel); row.appendChild(go);
+    box.appendChild(row);
+    setTimeout(function () { inp.focus(); inp.select(); }, 60);
   });
 }
 function confirmDelete(i) {
@@ -537,6 +627,7 @@ function confirmDelete(i) {
       Object.keys(c.photos || {}).forEach(function (qid) {
         (c.photos[qid] || []).forEach(delPhoto);
       });
+      (c.notePhotos || []).forEach(delPhoto);
       closets().splice(i, 1); save(); close(); drawList();
     });
     row.appendChild(keep); row.appendChild(del);
@@ -612,7 +703,7 @@ function drawExport() {
 function buildPayload() {
   var cs = closets();
   return Promise.all(cs.map(function (c) {
-    var byQ = {};
+    var byQ = {}, notePix = [];
     var jobs = [];
     Object.keys(c.photos || {}).forEach(function (qid) {
       (c.photos[qid] || []).forEach(function (pid) {
@@ -622,9 +713,18 @@ function buildPayload() {
         }));
       });
     });
+    // kept in their own list, not folded into byQ - the importer has to be
+    // able to tell a closet photo from an answer's evidence, because one
+    // raises an alert and the other must not
+    (c.notePhotos || []).forEach(function (pid) {
+      jobs.push(getPhoto(pid).then(blobToDataURL).then(function (d) {
+        if (d) notePix.push(d);
+      }));
+    });
     return Promise.all(jobs).then(function () {
       return {
         name: c.name, answers: c.answers || {}, notes: c.notes || "",
+        notePhotos: notePix,
         // Each photo appears once, under the question it was taken for. There
         // used to be a second flat copy of every one of them alongside this,
         // which doubled the size of the file for nothing - base64 is already
@@ -700,6 +800,11 @@ function trashIcon() {
   return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9da0a3"' +
     ' stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+}
+function pencilIcon() {
+  return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9da0a3"' +
+    ' stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
 }
 function cameraIcon() {
   return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7fb6f2"' +

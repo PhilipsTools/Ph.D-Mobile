@@ -1,7 +1,7 @@
 /* offline shell - hospital wifi is unreliable, the app must work with none */
 /* bump the cache name whenever the shell changes, or phones keep serving the
    old app out of the cache they already have */
-const CACHE = 'walkaround-504e6c7248';
+const CACHE = 'walkaround-f41e82d1c3';
 const FILES = ['index.html','app.js','data.js','questions.json','manifest.json',
                'hospitals.json','mark.png','icon-192.png','icon-512.png',
                'icon-maskable-512.png','apple-touch-icon.png','favicon-32.png'];
