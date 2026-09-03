@@ -269,6 +269,8 @@ function show(name) {
     $(n).classList.toggle("hide", n !== name);
   });
   window.scrollTo(0, 0);
+  // an update that landed mid-walkaround has been waiting for this moment
+  if (name === "gate" && pendingUpdate) return reloadForUpdate();
   if (name === "gate") drawGate();
   if (name === "list") drawList();
   if (name === "qs") drawQuestions();
@@ -287,6 +289,8 @@ function drawGate() {
     sel.appendChild(o);
   });
   $("yearlab").textContent = S.gate.year;
+  var bl = $("build");
+  if (bl) bl.textContent = buildLine();
   var h = S.gate.hospital;
   if (h) {
     var n = (S.closetsByKey[h + "|" + S.gate.year] || []).length;
@@ -857,9 +861,13 @@ function init() {
   // published on the PC looked like it had not arrived until the app was force
   // closed and reopened.
   document.addEventListener("visibilitychange", function () {
-    if (!document.hidden) refreshFromServer();
+    if (document.hidden) return;
+    checkForUpdate();               // new app code, as well as new questions
+    refreshFromServer();
   });
-  window.addEventListener("focus", refreshFromServer);
+  window.addEventListener("focus", function () {
+    checkForUpdate(); refreshFromServer();
+  });
 
   armOffline();
 }
@@ -881,14 +889,79 @@ function refreshFromServer() {
     .then(function () { refreshing = false; });
 }
 
+/* ------------------------------------------------------ staying up to date */
+/* An installed app runs out of its own cache, so publishing a new version is
+   only half the job - the phone has to notice and then actually run it.
+   Left to itself that takes two launches: the first quietly downloads the new
+   worker, the second finally uses it. From the outside that is indistinguish-
+   able from a publish that did not work. So: ask for an update every time the
+   app comes up or comes back, and reload once when one lands. */
+var SW = null, reloading = false, pendingUpdate = false;
+
+function reloadForUpdate() {
+  if (reloading) return;
+  // Never mid-closet. Everything is saved as it is typed, so a reload would
+  // lose nothing - but pulling the screen out from under someone standing in
+  // a rack room is not on. It waits until they are back on the gate.
+  if (S.screen !== "gate") { pendingUpdate = true; return; }
+  try {
+    // A restart loop would make the app unusable, so there is a floor on how
+    // often it will do this. A floor, not a once-ever: two publishes in one
+    // long day should both arrive.
+    var last = Number(sessionStorage.getItem(LS + ".reloadedAt") || 0);
+    if (Date.now() - last < 60000) return;
+    sessionStorage.setItem(LS + ".reloadedAt", String(Date.now()));
+  } catch (e) {}
+  reloading = true;
+  location.reload();
+}
+function checkForUpdate() {
+  if (!SW) return;
+  // .catch, not try/catch. update() hands back a promise, and it rejects for
+  // ordinary reasons - no signal, or a registration that has gone away - which
+  // a try/catch never sees and which surface as uncaught errors instead.
+  try {
+    var p = SW.update();
+    if (p && p.catch) p.catch(function () {});
+  } catch (e) {}
+}
+
 /* Caches the app so it opens with no signal. Silent on purpose - a phone
    served over plain http has no service worker at all, and there is nothing
    the user can do about it from here. The closets are saved on the phone
    either way. */
 function armOffline() {
   if (!("serviceWorker" in navigator)) return;
+  // Was this page already being looked after when it loaded? If not, the first
+  // worker to take over is a first install, not an update. Reloading for that
+  // achieves nothing - and it used to spend the restart the real update needed
+  // a moment later, so a genuine new version silently did not arrive.
+  var hadController = !!navigator.serviceWorker.controller;
   // .catch, not try/catch - a rejected register() would surface as an
   // uncaught promise error in the console otherwise
-  navigator.serviceWorker.register("sw.js").catch(function () {});
+  navigator.serviceWorker.register("sw.js").then(function (reg) {
+    SW = reg;
+    checkForUpdate();
+    reg.addEventListener("updatefound", function () {
+      var fresh = reg.installing;
+      if (!fresh) return;
+      fresh.addEventListener("statechange", function () {
+        if (fresh.state === "installed" && hadController) reloadForUpdate();
+      });
+    });
+  }).catch(function () {});
+  // the worker calls skipWaiting, so it takes over the moment it installs
+  navigator.serviceWorker.addEventListener("controllerchange", function () {
+    if (hadController) reloadForUpdate();
+  });
+}
+
+/* Which build is on this phone. Written into data.js by the tool when it
+   publishes, so "did my update land?" is answered by looking rather than by
+   guessing. */
+function buildLine() {
+  var b = window.__BUILD || {};
+  if (!b.id) return "";
+  return "App " + b.id + (b.published ? "  ·  " + b.published : "");
 }
 document.addEventListener("DOMContentLoaded", init);
