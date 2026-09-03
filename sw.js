@@ -1,7 +1,7 @@
 /* offline shell - hospital wifi is unreliable, the app must work with none */
 /* CACHE is rewritten on every publish, from a fingerprint of the files
    themselves, so a phone holding the old app stops matching and refetches. */
-const CACHE = 'walkaround-fdcd3ea8';
+const CACHE = 'walkaround-72f2d41e';
 const FILES = ['index.html','app.js','data.js','questions.json','manifest.json',
                'hospitals.json','mark.png','icon-192.png','icon-512.png',
                'icon-maskable-512.png','apple-touch-icon.png','favicon-32.png'];
