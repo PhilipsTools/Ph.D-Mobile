@@ -41,7 +41,7 @@
  },
  {
   "name": "Juravinski Hospital",
-  "type": "enterprise"
+  "type": "standalone"
  },
  {
   "name": "Mackenzie Health",
@@ -81,7 +81,7 @@
  },
  {
   "name": "St Thomas Elgin General Hospital",
-  "type": "enterprise"
+  "type": "standalone"
  },
  {
   "name": "Sunnybrook Health Sciences Centre",
