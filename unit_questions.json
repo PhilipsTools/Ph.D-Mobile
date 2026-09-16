@@ -1,0 +1,2363 @@
+{
+ "sections": {
+  "4.1": "Telecom Closets",
+  "4.2": "PIC iX VLANs",
+  "4.3": "Network Topology",
+  "4.4": "Network Hardware",
+  "4.5": "Network Device Configuration and Performance Review",
+  "5.1": "DNS",
+  "5.2": "DHCP",
+  "5.3": "NTP",
+  "6.1": "Server Details",
+  "6.2": "PIC iX System Performance",
+  "7": "PIC iX Configuration Review",
+  "8": "ITS Configuration Review",
+  "9": "Future Considerations"
+ },
+ "questions": [
+  {
+   "id": "non philips vlans",
+   "kind": "alert",
+   "question": "Are there any Non-Philips VLANs present?",
+   "alert": "Some Philips Monitors are in Non-Philips VLANs",
+   "section": "4.2",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "discuss scalability of current vlan design",
+   "kind": "alert",
+   "question": "Do the current VLANs have future scalability available?",
+   "alert": "Discuss Scalability of Current VLAN Design",
+   "section": "4.2",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "place pics in same vlan as connected bedsides",
+   "kind": "alert",
+   "question": "Do PIC iX and bedsides reside in the same VLAN?",
+   "alert": "Place PIICs in same VLAN as connected bedsides",
+   "section": "4.2",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "switch management vlan using vlan 1",
+   "kind": "alert",
+   "question": "Is the switch Management VLAN using VLAN 1?",
+   "alert": "VLAN 1 is used for Management VLAN",
+   "section": "4.2",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "switch firmware not up to date",
+   "kind": "alert",
+   "question": "Are all switch firmware revisions up to date?",
+   "alert": "Switch Firmware not up to date",
+   "section": "4.4",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 4",
+   "kind": "alert",
+   "question": "Do any interfaces have a sustained usage over 20 Mbps?",
+   "alert": "Interfaces with Sustained usage over 20 Mbps",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "clean up old vlan interfaces",
+   "kind": "alert",
+   "question": "Unused/Inconsistent VLANs configured on trunk ports",
+   "alert": "Clean up old VLAN Interfaces",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "switch uptime over 2 years",
+   "kind": "alert",
+   "question": "Do any switches have an uptime of less than 2 weeks?",
+   "alert": "Switch Uptime under 2 weeks",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 3",
+   "kind": "alert",
+   "question": "Do any routing issues appear?",
+   "alert": "Routing error",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert",
+   "kind": "alert",
+   "question": "Is PIM configured properly?",
+   "alert": "PIM Configured",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "enable igmp snooping",
+   "kind": "alert",
+   "question": "Is IGMP Snooping enabled?",
+   "alert": "Enable IGMP Snooping",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "interfaces with sustained usage over 20 mbps",
+   "kind": "alert",
+   "question": "Are there any TX/RX errors?",
+   "alert": "TX/RX load errors",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 6",
+   "kind": "alert",
+   "question": "Is Spanning-tree portfast enabled on trunks?",
+   "alert": "Trunk-portfast",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "missing redundant switch connection",
+   "kind": "alert",
+   "question": "Do any switches only have 1 connected uplink?",
+   "alert": "Missing Redundant Switch Connection",
+   "section": "4.5",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "err disabled ports",
+   "kind": "alert",
+   "question": "Are there any Err-Disabled Ports?",
+   "alert": "Err-Disabled Ports",
+   "section": "4.5",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "sfp threshold exceeded",
+   "kind": "alert",
+   "question": "SFP Threshold Exceeded",
+   "alert": "SFP Threshold Exceeded",
+   "section": "4.5",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "high cpu alert",
+   "kind": "alert",
+   "question": "Are there any high CPU alerts?",
+   "alert": "High CPU Alert",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "logging command associated with cisco bug",
+   "kind": "alert",
+   "question": "Is the logging misconfigured?",
+   "alert": "Misconfigured Logging",
+   "section": "4.5",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "vtp mode misconfiguration",
+   "kind": "alert",
+   "question": "Is there VTP mode misconfiguration?",
+   "alert": "VTP Mode Misconfiguration",
+   "section": "4.5",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 13",
+   "kind": "alert",
+   "question": "Is STP mode rapid-PVST?",
+   "alert": "STP not configured as rapid-PVST",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "switch configuration not saved",
+   "kind": "alert",
+   "question": "Are any switch configurations not saved?",
+   "alert": "Switch Configuration Not Saved",
+   "section": "4.5",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "investigate stp root bridge",
+   "kind": "alert",
+   "question": "Investigate STP Root Bridge",
+   "alert": "Investigate STP Root Bridge",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "speed duplex mismatch",
+   "kind": "alert",
+   "question": "Do any ports have a Speed/Duplex Mismatch?",
+   "alert": "Speed/Duplex Mismatch",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "misconfigured trunk",
+   "kind": "alert",
+   "question": "Are any Trunk ports misconfigured?",
+   "alert": "Misconfigured Trunk",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "excessive crc errors",
+   "kind": "alert",
+   "question": "Are there any excessive CRC errors?",
+   "alert": "Excessive CRC Errors",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "unsupported uplink speeds",
+   "kind": "alert",
+   "question": "Are there any unsupported uplink speeds?",
+   "alert": "Unsupported Uplink Speeds",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 12",
+   "kind": "alert",
+   "question": "Are there any unsupported SFP modules?",
+   "alert": "Unsupported SFP Modules",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "fan temp warning",
+   "kind": "alert",
+   "question": "Are there any fan temp warnings?",
+   "alert": "Fan Temp Warning",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "mac flapping",
+   "kind": "alert",
+   "question": "Is there MAC flapping?",
+   "alert": "MAC Flapping",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 2",
+   "kind": "alert",
+   "question": "Are any ports configured as both trunk & access?",
+   "alert": "Switch configured as both trunk & access",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "its speed duplex port misconfiguration",
+   "kind": "alert",
+   "question": "ITS Speed/Duplex Port Misconfiguration",
+   "alert": "ITS Speed/Duplex Port Misconfiguration",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "multiple management ip addresses configured",
+   "kind": "alert",
+   "question": "Are there multiple management IP addresses configured per switch?",
+   "alert": "Multiple Management IP Addresses Configured",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "inconsistent time ntp on switches",
+   "kind": "alert",
+   "question": "Is the time/date across all switches consistent?",
+   "alert": "Inconsistent Time/NTP on switches",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "ntp configuration on switch",
+   "kind": "alert",
+   "question": "Do any switches have no NTP server configured?",
+   "alert": "Switches with no NTP server",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 14",
+   "kind": "alert",
+   "question": "Are there any unknown VLANS?",
+   "alert": "Unknown VLAN's configured",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "correct switches that have http server enabled",
+   "kind": "alert",
+   "question": "Is HTTP server configured?",
+   "alert": "HTTP server",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 5",
+   "kind": "alert",
+   "question": "Are the ACLs misconfigured?",
+   "alert": "ACL misconfigured",
+   "section": "4.5",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "native vlan mismatch",
+   "kind": "alert",
+   "question": "Is there a Native VLAN mismatch error?",
+   "alert": "Native VLAN Mismatch",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "missing pablo data",
+   "kind": "alert",
+   "question": "Are any switches missing PABLO data?",
+   "alert": "Switches missing PABLO data",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "switches using telnet",
+   "kind": "alert",
+   "question": "Do any Switches use Telnet?",
+   "alert": "Switches using Telnet",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "hsrp interface tracking",
+   "kind": "alert",
+   "question": "Is HSRP configured without Interface Tracking?",
+   "alert": "HSRP Interface Tracking",
+   "section": "4.5",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "dns details",
+   "kind": "data",
+   "question": "DNS details",
+   "section": "5.1",
+   "heading": "DNS",
+   "repeat": 1,
+   "repeat_label": "",
+   "counter": null,
+   "fields": [
+    {
+     "label": "Primary DNS IP",
+     "type": "text",
+     "required": true
+    },
+    {
+     "label": "Secondary DNS IP",
+     "type": "text",
+     "required": true
+    },
+    {
+     "label": "Additional DNS IP",
+     "type": "text"
+    },
+    {
+     "label": "DNS suffix #1",
+     "type": "text",
+     "required": true
+    },
+    {
+     "label": "DNS suffix #2",
+     "type": "text"
+    },
+    {
+     "label": "DNS suffix #3",
+     "type": "text"
+    },
+    {
+     "label": "DNS hosted by",
+     "type": "choice",
+     "choices": [
+      "Hospital IT",
+      "Philips (Windows server)"
+     ],
+     "header": true
+    }
+   ]
+  },
+  {
+   "id": "host file in use",
+   "kind": "alert",
+   "question": "Are any host files in use?",
+   "alert": "Host File in Use",
+   "section": "5.1",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "dns records missing",
+   "kind": "alert",
+   "question": "Are any DNS records missing?",
+   "alert": "DNS A Records not configured",
+   "section": "5.1",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "inconsistent dns configuration across pic ix servers",
+   "kind": "alert",
+   "question": "Is the DNS configuration across PIC iX servers consistent?",
+   "alert": "Inconsistent DNS configuration across PIC iX servers",
+   "section": "5.1",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "dhcp details",
+   "kind": "data",
+   "question": "DHCP details",
+   "section": "5.2",
+   "heading": "DHCP",
+   "repeat": 1,
+   "repeat_label": "",
+   "counter": null,
+   "fields": [
+    {
+     "label": "DHCP hosted by",
+     "type": "choice",
+     "choices": [
+      "Philips (server)",
+      "Philips (PIC iX application)",
+      "Hospital IT"
+     ],
+     "required": true,
+     "fail_when": [
+      "Philips (PIC iX application)"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "if philips hosted dhcp any bad addresses",
+   "kind": "alert",
+   "question": "If Philips-hosted DHCP, any bad addresses?",
+   "alert": "DHCP IP conflict detection (Bad Addresses)",
+   "section": "5.2",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "microsoft dhcp failover not configured",
+   "kind": "alert",
+   "question": "Is Microsoft DHCP Failover configured",
+   "alert": "Microsoft DHCP Failover not configured",
+   "section": "5.2",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "ntp details",
+   "kind": "data",
+   "question": "NTP details",
+   "section": "5.3",
+   "heading": "NTP",
+   "repeat": 1,
+   "repeat_label": "",
+   "counter": null,
+   "fields": [
+    {
+     "label": "NTP server IP",
+     "type": "text",
+     "required": true
+    }
+   ]
+  },
+  {
+   "id": "does ntp pass connection validation",
+   "kind": "alert",
+   "question": "Does NTP pass connection validation?",
+   "alert": "NTP Validation failed",
+   "section": "5.3",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "is time on the primary server accurate",
+   "kind": "alert",
+   "question": "Is time on the primary server accurate?",
+   "alert": "Time on system inaccurate",
+   "section": "5.3",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "verify esxi time is not synchronized to philips vms",
+   "kind": "alert",
+   "question": "Verify ESXi time is NOT synchronized to Philips VMs",
+   "alert": "ESXi time verification on Philips virtual machines",
+   "section": "5.3",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Pass",
+     "result": "Pass"
+    },
+    {
+     "label": "Fail",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "any unsupported software installed",
+   "kind": "alert",
+   "question": "Is there any unsupported software installed?",
+   "alert": "Unsupported Software installed",
+   "section": "6.1",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "group policy applied to pic ix servers",
+   "kind": "alert",
+   "question": "Are any Group Policies applied to PIC iX servers?",
+   "alert": "Group Policy Applied to PIC iX Servers",
+   "section": "6.1",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "security patching out of date",
+   "kind": "alert",
+   "question": "Is the Windows security patching up to date?",
+   "alert": "Microsoft Security Patching out of date",
+   "section": "6.1",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "virtual machine s using e1000 network adapter",
+   "kind": "alert",
+   "question": "Virtual Machine(s) using E1000 Network Adapter",
+   "alert": "Virtual Machine(s) using E1000 Network Adapter",
+   "section": "6.1",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "anti virus software not installed",
+   "kind": "alert",
+   "question": "Is there any anti-virus software installed?",
+   "alert": "Anti-Virus Software Not Installed",
+   "section": "6.1",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ],
+   "followup": {
+    "label": "Which anti-virus software?",
+    "choices": [
+     "CrowdStrike",
+     "McAfee",
+     "Symantec",
+     "Trellix",
+     "Trend Micro",
+     "Windows Defender"
+    ],
+    "when": "Pass"
+   }
+  },
+  {
+   "id": "new alert 7",
+   "kind": "alert",
+   "question": "Is the installed anti-virus software supported?",
+   "alert": "Unsupported Anti-Virus software",
+   "section": "6.1",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 17",
+   "kind": "alert",
+   "question": "Is the Web Cert Valid? When does it expire?",
+   "alert": "Web certification expiration past/due soon",
+   "section": "6.1",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "install vmware tools",
+   "kind": "alert",
+   "question": "Is VMware tools installed?",
+   "alert": "VMware tools not installed",
+   "section": "6.1",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "server installed reachable on prs",
+   "kind": "alert",
+   "question": "Are all servers installed & reachable on PRS?",
+   "alert": "Devices missing/unreachable on PRS",
+   "section": "6.1",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "are all prs records accurate",
+   "kind": "alert",
+   "question": "Are all PRS records accurate?",
+   "alert": "PRS Records inaccurate",
+   "section": "6.1",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "are prs credentials added",
+   "kind": "alert",
+   "question": "Are PRS credentials added?",
+   "alert": "PRS Credentials Not Configured",
+   "section": "6.1",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "physical servers is team nic ing configured",
+   "kind": "alert",
+   "question": "Physical servers: is team NIC-ing configured?",
+   "alert": "Team NIC-ing not configured",
+   "section": "6.1",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "does the quantas per minute graph pass",
+   "kind": "alert",
+   "question": "Does the Quantas per minute graph pass?",
+   "alert": "Quantas Graph Outside Range",
+   "section": "6.2",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "does the review time graph pass",
+   "kind": "alert",
+   "question": "Does the review time graph pass?",
+   "alert": "Review Time Outside Expected Range",
+   "section": "6.2",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 11",
+   "kind": "alert",
+   "question": "Are any hosts offline?",
+   "alert": "Hosts offline",
+   "section": "7",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "hosts with pending reboots",
+   "kind": "alert",
+   "question": "Are there any hosts with pending reboots?",
+   "alert": "Devices With Reboot Pending",
+   "section": "7",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "multiple pic ix versions",
+   "kind": "alert",
+   "question": "Are there multiple PIC iX versions installed?",
+   "alert": "Multiple PIC iX Versions installed",
+   "section": "7",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "configure the pic ix archive export feature",
+   "kind": "alert",
+   "question": "Is the PIC iX Archive Export feature configured?",
+   "alert": "Configure the PIC iX Archive Export feature",
+   "section": "7",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "hl7 configured as distributed",
+   "kind": "alert",
+   "question": "Is HL7 configured as distributed or centralized?",
+   "alert": "HL7 Configured as Centralized",
+   "section": "7",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Distributed",
+     "result": "Pass"
+    },
+    {
+     "label": "Centralized",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 16",
+   "kind": "alert",
+   "question": "Is the Event Notification Configured as Distributed?",
+   "alert": "Event Notification set to centralized",
+   "section": "7",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 8",
+   "kind": "alert",
+   "question": "Is the PSCN system added into the PIC iX topology?",
+   "alert": "Networking devices missing from PIC iX topology",
+   "section": "7",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "any unused equipment labels",
+   "kind": "alert",
+   "question": "Are there any unused equipment labels configured?",
+   "alert": "Unused Equipment Labels Configured In Topology",
+   "section": "7",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "new alert 9",
+   "kind": "alert",
+   "question": "Is there only 1 multicast zone configured per geographical region?",
+   "alert": "More than one multicast zone configured per geographical region",
+   "section": "7",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "non sequential addresses in multicast range",
+   "kind": "alert",
+   "question": "Are there non-sequential addresses in multicast range?",
+   "alert": "Non-sequential addresses in multicast range",
+   "section": "7",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "pic ix interfaces",
+   "kind": "data",
+   "question": "PIC iX interfaces",
+   "section": "7",
+   "heading": "",
+   "repeat": 1,
+   "repeat_label": "",
+   "counter": {
+    "label": "How many outbound HL7 feeds are there?",
+    "mode": "group",
+    "prefix": "Outbound HL7",
+    "min": 0,
+    "max": 10,
+    "default": 1
+   },
+   "fields": [
+    {
+     "label": "ADT",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Hospital Inbound Order",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Event Notification / CareEvent",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "12 Lead Export",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #1",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #2",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #3",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #4",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #5",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #6",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #7",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #8",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #9",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    },
+    {
+     "label": "Outbound HL7 #10",
+     "type": "choice",
+     "choices": [
+      "Pass",
+      "Fail",
+      "N/A"
+     ],
+     "pre": "IP address",
+     "fail_when": [
+      "Fail"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "new alert 10",
+   "kind": "alert",
+   "question": "Is helpful information configured in the PIC iX topology?",
+   "alert": "Missing helpful information",
+   "section": "7",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "focal point validation",
+   "kind": "alert",
+   "question": "Does Focal Point Validation pass?",
+   "alert": "Focal Point Validation Failed",
+   "section": "7",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "apc details",
+   "kind": "data",
+   "question": "APC details",
+   "section": "8",
+   "heading": "",
+   "repeat": 12,
+   "repeat_label": "APC #%d",
+   "counter": {
+    "label": "How many APCs are there?",
+    "mode": "repeat",
+    "min": 1,
+    "max": 12,
+    "default": 1
+   },
+   "fields": [
+    {
+     "label": "Name",
+     "type": "text"
+    },
+    {
+     "label": "IP address",
+     "type": "text"
+    },
+    {
+     "label": "Subnet mask",
+     "type": "text"
+    },
+    {
+     "label": "Default gateway",
+     "type": "text"
+    },
+    {
+     "label": "Software version",
+     "type": "choice",
+     "choices": [
+      "D.01.01",
+      "D.01.02",
+      "D.02.00"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "any unregistered access points",
+   "kind": "alert",
+   "question": "Are there any unregistered access points?",
+   "alert": "Check Status of Unregistered Access Points",
+   "section": "8",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "all apcs online reachable",
+   "kind": "alert",
+   "question": "Are all APCs online & reachable?",
+   "alert": "APC offline or unreachable",
+   "section": "8",
+   "severity": "Critical",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "any aps with default mac address name",
+   "kind": "alert",
+   "question": "Do any APs have a default MAC-address name?",
+   "alert": "APs with default MAC-address name",
+   "section": "8",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "its scanned into pic ix config",
+   "kind": "alert",
+   "question": "Is ITS scanned into PIC iX config?",
+   "alert": "ITS not scanned into PIC iX config",
+   "section": "8",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "alert destination pointed to focalpoint pic ix",
+   "kind": "alert",
+   "question": "Is the alert destination pointed to FocalPoint/PIC iX?",
+   "alert": "Alert destination not pointed to FocalPoint/PIC iX",
+   "section": "8",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "all aps grouped by geographical location",
+   "kind": "alert",
+   "question": "Are all APs grouped by geographical location?",
+   "alert": "Ungrouped Access points",
+   "section": "8",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "any silver sync standalone poes present",
+   "kind": "alert",
+   "question": "Are there any Silver sync / standalone POEs present?",
+   "alert": "Silver Sync / Standalone PoE Devices Present",
+   "section": "8",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "current revision of pic ix",
+   "kind": "alert",
+   "question": "Current revision of PIC iX?",
+   "alert": "Current revision of PIC iX is unsupported",
+   "section": "9",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Rev A",
+     "result": "Fail"
+    },
+    {
+     "label": "Rev B",
+     "result": "Fail"
+    },
+    {
+     "label": "Rev C",
+     "result": "Fail"
+    },
+    {
+     "label": "Rev 4",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "any gen 9 servers present physical",
+   "kind": "alert",
+   "question": "Are any Gen 9 servers present (physical)?",
+   "alert": "Gen 9 Physical Servers Present",
+   "section": "9",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "any rp5810 pcs present",
+   "kind": "alert",
+   "question": "Are any RP5810 PCs present?",
+   "alert": "RP5810 PCs present",
+   "section": "9",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "are all monitors version m or later",
+   "kind": "alert",
+   "question": "Are all monitors version M or later?",
+   "alert": "Revision L monitors or earlier installed",
+   "section": "9",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "any usb central recorders in use",
+   "kind": "alert",
+   "question": "Are any USB central recorders in use?",
+   "alert": "USB central recorders in use",
+   "section": "9",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
+   "id": "any current eol products",
+   "kind": "alert",
+   "question": "Are there any current EOL products?",
+   "alert": "Devices with current EOL dates installed",
+   "section": "9",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ],
+   "products": [
+    "Cisco 2960TC",
+    "Cisco 2960S",
+    "PIC iX Rev A",
+    "MP20",
+    "MP30",
+    "MP40",
+    "MP50",
+    "MP60",
+    "MP70",
+    "MP80",
+    "MP90",
+    "PIC iX Rev B",
+    "PIC iX Rev C",
+    "HP RP5810",
+    "Central USB recorder",
+    "MMS",
+    "X2",
+    "Cisco 3850",
+    "Cisco 2960X",
+    "Cisco 2960 24ts",
+    "Cisco 3750g"
+   ]
+  },
+  {
+   "id": "any products with future eol dates",
+   "kind": "alert",
+   "question": "Are there any products with future EOL dates?",
+   "alert": "Devices with future EOL dates installed",
+   "section": "9",
+   "severity": "Important",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Fail"
+    },
+    {
+     "label": "No",
+     "result": "Pass"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ],
+   "products": [
+    "MX400",
+    "MX700",
+    "MX800",
+    "FMS-4 4 slot rack",
+    "FMS-8 8 slot rack",
+    "HP Engage Flex Pro (EFP) Gen 1",
+    "HP ProLiant Gen 10 Server",
+    "Cisco C1000"
+   ]
+  }
+ ]
+}

@@ -139,6 +139,33 @@ input.txt{min-height:52px;font-size:17px}
   display:flex;align-items:center;justify-content:center;color:var(--accent700);flex:none}
 .cap.has{border-style:solid}
 
+/* ---------- standalone: closets / PIC iX tabs and clinical units ---------- */
+#uq .head{padding:58px 20px 10px}
+.closet.unit .cname{white-space:normal;line-height:1.1}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line-card);
+  border-radius:14px;padding:4px}
+.tab{flex:1;min-height:42px;border-radius:10px;font-family:var(--cond);font-size:16px;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--n700)}
+.tab.on{background:var(--accent);color:#16181a}
+.sec{background:var(--card);border:1px solid var(--line-card);border-radius:14px;overflow:hidden}
+.sec.open{border-color:rgba(127,182,242,.35)}
+.sech{width:100%;display:flex;align-items:center;gap:10px;padding:14px 14px;text-align:left}
+.secn{font-family:var(--cond);font-size:13px;color:var(--accent700);min-width:28px}
+.sect{flex:1;font-family:var(--cond);font-size:17px;text-transform:uppercase;letter-spacing:.03em}
+.secc{font-size:12px;color:var(--n600)}
+.secb{display:flex;flex-direction:column;gap:12px;padding:0 10px 12px}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--n600)}
+select.inp{appearance:none;-webkit-appearance:none}
+.inp.small{min-height:44px;font-size:15px}
+.inp.bad{border-color:var(--fail-b);color:#fdeeee}
+.entry{border:1px solid var(--line-ctl);border-radius:12px;padding:10px;display:flex;
+  flex-direction:column;gap:10px}
+.entt{font-family:var(--cond);font-size:15px;color:var(--accent700);text-transform:uppercase}
+.picks{display:flex;flex-direction:column;gap:8px}
+.pick{display:flex;align-items:center;gap:10px;font-size:15px}
+.pick input{width:22px;height:22px}
+
 /* ---------- sheets & overlays ---------- */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;
   display:flex;align-items:flex-end;transition:bottom .22s ease}
@@ -237,6 +264,18 @@ input.txt{min-height:52px;font-size:17px}
   <div class="body" id="qlist" style="padding:14px 20px 40px;gap:14px"></div>
 </section>
 
+<!-- ======================== one clinical unit ======================== -->
+<section id="uq" class="screen hide">
+  <div class="head">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <button class="ghost" id="tounits">&#8249; Clinical units</button>
+      <div id="uqcount" style="font-size:13px;color:var(--n600)"></div>
+    </div>
+    <div class="hosp" id="uqname" style="font-size:27px;margin-top:8px"></div>
+  </div>
+  <div class="body" id="uqlist" style="padding:14px 20px 40px;gap:14px"></div>
+</section>
+
 <!-- ============================ export ============================ -->
 <section id="exp" class="screen hide">
   <div class="body">
@@ -263,5 +302,6 @@ input.txt{min-height:52px;font-size:17px}
      file:// and would leave the app with nothing to ask -->
 <script src="data.js"></script>
 <script src="app.js"></script>
+<script src="units.js"></script>
 </body>
 </html>

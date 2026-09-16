@@ -20,6 +20,9 @@ var S = {
   // out, keyed the same way the closets are. Comparing that against how it
   // looks now is what tells the gate whether there is still work to do.
   closetsByKey: {}, exported: {},
+  // standalone PIC iX sites: clinical units, filed like the closets, the PIC
+  // iX type of each hospital as published, and which tab the list is on
+  unitsByKey: {}, types: {}, tab: "closets", unit: -1,
   folder: "", screen: "gate", closet: -1, questions: []
 };
 var Q = [];                       // the question set in play
@@ -33,6 +36,7 @@ function save() {
     localStorage.setItem(LS, JSON.stringify({
       hospitals: S.hospitals, mine: S.mine, gate: S.gate,
       closetsByKey: S.closetsByKey, exported: S.exported,
+      unitsByKey: S.unitsByKey, types: S.types, tab: S.tab,
       folder: S.folder
     }));
   } catch (e) { /* full or private mode - the screen still works */ }
@@ -46,6 +50,9 @@ function load() {
     S.mine = d.mine || [];
     S.closetsByKey = d.closetsByKey || {};
     S.exported = d.exported || {};
+    S.unitsByKey = d.unitsByKey || {};
+    S.types = d.types || {};
+    S.tab = d.tab === "units" ? "units" : "closets";
     S.folder = d.folder || "";
     // The gate deliberately does NOT come back. Every launch opens with no
     // hospital picked and the year taken off the calendar, so nobody walks a
@@ -70,7 +77,9 @@ function walkSignature(k) {
     });
     shots += (c.notePhotos || []).length;
   });
-  return cs.length + ":" + answers + ":" + shots;
+  // clinical units count too - carrying on in the PIC iX tab after an export
+  // has to put the gate back to "not exported yet"
+  return cs.length + ":" + answers + ":" + shots + "|" + unitSignature(k);
 }
 function markExported() {
   S.exported[key()] = walkSignature();
@@ -243,11 +252,14 @@ function loadHospitals() {
     .then(function (list) {
       var offline = !list;                     // no signal - keep what we have
       if (offline) list = window.__HOSPITALS || null;
-      var names = [];
+      var names = [], types = {};
       (list || []).forEach(function (h) {
         var n = typeof h === "string" ? h : (h && h.name);
         if (n && names.indexOf(n) < 0) names.push(n);
+        // standalone or enterprise, as set in the tool's hospital list
+        if (n && h && typeof h === "object") types[n] = h.type || "enterprise";
       });
+      if (names.length) S.types = types;
       // The tool's list wins outright, so removing or renaming a site there
       // actually takes effect here. Only the sites added on this phone are
       // carried over - and only if the tool has not since published them.
@@ -265,7 +277,7 @@ function loadHospitals() {
 /* ------------------------------------------------------------ the screens */
 function show(name) {
   S.screen = name;
-  ["gate", "list", "qs", "exp"].forEach(function (n) {
+  ["gate", "list", "qs", "uq", "exp"].forEach(function (n) {
     $(n).classList.toggle("hide", n !== name);
   });
   window.scrollTo(0, 0);
@@ -274,6 +286,7 @@ function show(name) {
   if (name === "gate") drawGate();
   if (name === "list") drawList();
   if (name === "qs") drawQuestions();
+  if (name === "uq") drawUnitQuestions();
   if (name === "exp") drawExport();
 }
 
@@ -294,8 +307,12 @@ function drawGate() {
   var h = S.gate.hospital;
   if (h) {
     var n = (S.closetsByKey[h + "|" + S.gate.year] || []).length;
-    $("hospmeta").textContent = S.gate.year + " · " + n + " closet" +
-      (n === 1 ? "" : "s") + " saved";
+    var meta = S.gate.year + " · " + n + " closet" + (n === 1 ? "" : "s");
+    if (isStandalone(h)) {
+      var nu = (S.unitsByKey[h + "|" + S.gate.year] || []).length;
+      meta += " · " + nu + " clinical unit" + (nu === 1 ? "" : "s") + " · standalone";
+    }
+    $("hospmeta").textContent = meta + " saved";
   } else {
     $("hospmeta").textContent = S.hospitals.length + " hospital" +
       (S.hospitals.length === 1 ? "" : "s") + " saved on this phone";
@@ -349,6 +366,11 @@ function drawList() {
   $("lhosp").textContent = S.gate.hospital;
   $("ybadge").textContent = S.gate.year;
   var host = $("closets"); host.innerHTML = "";
+  // a standalone PIC iX site walks clinical units as well as closets
+  if (isStandalone()) {
+    host.appendChild(tabBar());
+    if (S.tab === "units") { drawUnitList(host); return; }
+  }
   var cs = closets();
 
   cs.forEach(function (c, i) {
@@ -434,7 +456,7 @@ function photoStrip(get, set, prefix) {
     x.onclick = function (e) {
       e.stopPropagation();
       set(get().filter(function (p) { return p !== pid; }));
-      delPhoto(pid); save(); drawQuestions();
+      delPhoto(pid); save(); redrawQuestions();
     };
     t.appendChild(x);
     strip.appendChild(t);
@@ -452,12 +474,18 @@ function photoStrip(get, set, prefix) {
       return shrink(f).then(function (b) { return putPhoto(id, b); });
     })).then(function (ids) {
       set(get().concat(ids));
-      save(); drawQuestions();
+      save(); redrawQuestions();
     });
   };
   capw.appendChild(inp);
   strip.appendChild(capw);
   return strip;
+}
+
+/* the photo strip is shared by a closet and a clinical unit - redraw whichever
+   one is on screen */
+function redrawQuestions() {
+  if (S.screen === "uq") drawUnitQuestions(); else drawQuestions();
 }
 
 /* ---- questions ---- */
@@ -678,8 +706,14 @@ function drawExport() {
   cs.forEach(function (c) {
     var n = counts(c); shots += n.shots; answers += n.done;
   });
+  var us = isStandalone() ? units() : [];
+  us.forEach(function (u) {
+    var n = unitCounts(u); shots += n.shots; answers += n.done;
+  });
   var t = $("tally"); t.innerHTML = "";
-  [cs.length + " closets", answers + " answers", shots + " photos"].forEach(function (s) {
+  var tallies = [cs.length + " closets"];
+  if (isStandalone()) tallies.push(us.length + " units");
+  tallies.concat([answers + " answers", shots + " photos"]).forEach(function (s) {
     t.appendChild(el("div", null, s));
   });
 
@@ -698,6 +732,22 @@ function drawExport() {
     row.appendChild(b);
     host.appendChild(row);
   });
+  if (isStandalone()) {
+    var uw = unitRollup();
+    unitAlerts().forEach(function (q) {
+      var r = uw[q.id];
+      if (!r || r.result !== "Fail") return;
+      any = true;
+      var row = el("div", "alert");
+      row.appendChild(el("div", "bar"));
+      var b = el("div");
+      b.appendChild(el("div", "an", q.alert || q.question));
+      b.appendChild(el("div", "ac", r.units.filter(function (v, i, a) {
+        return a.indexOf(v) === i; }).join(", ")));
+      row.appendChild(b);
+      host.appendChild(row);
+    });
+  }
   if (!any) host.appendChild(el("div", "note", "Nothing is failing yet."));
 
   $("fname").textContent = exportName();
@@ -738,7 +788,7 @@ function buildPayload() {
       };
     });
   })).then(function (closetsOut) {
-    return {
+    var out = {
       kind: "healthcheck-walkaround", version: 1, section: "4.1",
       hospital: S.gate.hospital, year: String(S.gate.year),
       exported: new Date().toISOString(),
@@ -747,6 +797,14 @@ function buildPayload() {
       }),
       closets: closetsOut
     };
+    if (!isStandalone()) return out;
+    // a standalone site also carries its clinical units - the desktop merges
+    // them into the one report
+    out.standalone = true;
+    out.unitQuestions = U.questions.map(function (q) {
+      return {id: q.id, question: q.question, kind: q.kind || "alert", section: q.section};
+    });
+    return unitsPayload().then(function (us) { out.units = us; return out; });
   });
 }
 function doSave() {
@@ -845,9 +903,12 @@ function init() {
   $("yup").onclick = function () { stepYear(1); };
   $("toclosets").onclick = function () { show("list"); };
   $("toclosets2").onclick = function () { show("list"); };
+  $("tounits").onclick = function () { show("list"); };
   $("save").onclick = doSave;
 
   loadHospitals().then(loadQuestions).then(function (qs) {
+    return loadUnits().then(function () { return qs; });
+  }).then(function (qs) {
     Q = qs;
     if (!Q.length) {
       $("resume").textContent = "No questions found - connect to the PC once to fetch them.";
@@ -883,8 +944,9 @@ function refreshFromServer() {
     .then(loadQuestions)
     .then(function (qs) {
       if (qs && qs.length) Q = qs;
-      drawGate();
+      return loadUnits();
     })
+    .then(function () { drawGate(); })
     .catch(function () { /* no signal - keep what we have */ })
     .then(function () { refreshing = false; });
 }
