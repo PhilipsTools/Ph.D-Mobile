@@ -2165,6 +2165,28 @@
    ]
   },
   {
+   "id": "new alert 18",
+   "kind": "alert",
+   "question": "Are the Access Point Defaults Configured correctly?",
+   "alert": "Access Point Default Configuration",
+   "section": "8",
+   "severity": "Recommendation",
+   "options": [
+    {
+     "label": "Yes",
+     "result": "Pass"
+    },
+    {
+     "label": "No",
+     "result": "Fail"
+    },
+    {
+     "label": "N/A",
+     "result": "Skip"
+    }
+   ]
+  },
+  {
    "id": "current revision of pic ix",
    "kind": "alert",
    "question": "Current revision of PIC iX?",
